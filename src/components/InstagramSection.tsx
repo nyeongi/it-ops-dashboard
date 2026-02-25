@@ -139,43 +139,45 @@ export default function InstagramSection({ refreshTrigger, startDate, endDate }:
 
     return (
         <>
-            <div className="grid lg:grid-cols-2 gap-6 w-full">
-                <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800 transition-all flex-grow">
+            <div className="flex flex-col gap-8 h-full w-full">
+                <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800 transition-all flex flex-col flex-1 min-h-[320px]">
                     <div className="flex items-center gap-3 mb-6">
                         <div className="p-2.5 bg-blue-100 dark:bg-blue-500/10 rounded-xl text-blue-600 dark:text-blue-400">
                             <BarChart3 size={20} />
                         </div>
                         <div>
                             <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">성과 트렌드</h2>
-                            <p className="text-sm text-zinc-500 dark:text-zinc-400">월별 팔로워, 조회수, 포스트 복합 차트</p>
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400">명확해진 시각적 너비로 확인하는 전체 지표 요약</p>
                         </div>
                     </div>
-                    <div className="h-64 w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <ComposedChart data={chartData} margin={{ top: 10, right: 30, left: 20, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#52525b" opacity={0.1} />
-                                <XAxis dataKey="displayMonth" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#71717a' }} dy={10} />
-                                <YAxis yAxisId="left" orientation="left" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#71717a' }} width={60} tickFormatter={(value) => value.toLocaleString()} />
-                                <YAxis yAxisId="right" orientation="right" domain={[0, 15]} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#71717a' }} width={45} tickFormatter={(value) => value.toLocaleString()} />
-                                <Tooltip
-                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--tooltip-bg, #ffffff)', color: 'var(--tooltip-color, #18181b)' }}
-                                    itemStyle={{ fontSize: '13px', fontWeight: 500 }}
-                                    labelStyle={{ color: '#71717a', marginBottom: '8px', fontSize: '12px' }}
-                                    formatter={(value: any) => {
-                                        if (typeof value === 'number') return value.toLocaleString();
-                                        return value;
-                                    }}
-                                />
-                                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                                <Bar yAxisId="right" dataKey="posts" name="포스트 건수" fill="#eab308" barSize={20} radius={[4, 4, 0, 0]} />
-                                <Line yAxisId="left" type="monotone" dataKey="followers" name="팔로워 수" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-                                <Line yAxisId="left" type="monotone" dataKey="views" name="조회수" stroke="#f43f5e" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-                            </ComposedChart>
-                        </ResponsiveContainer>
+                    <div className="flex-grow w-full relative min-h-[220px]">
+                        <div className="absolute inset-0">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#52525b" opacity={0.1} />
+                                    <XAxis dataKey="displayMonth" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#71717a' }} dy={10} />
+                                    <YAxis yAxisId="left" orientation="left" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#71717a' }} width={45} tickFormatter={(value) => value.toLocaleString()} />
+                                    <YAxis yAxisId="right" orientation="right" domain={[0, 15]} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#71717a' }} width={30} tickFormatter={(value) => value.toLocaleString()} />
+                                    <Tooltip
+                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--tooltip-bg, #ffffff)', color: 'var(--tooltip-color, #18181b)' }}
+                                        itemStyle={{ fontSize: '13px', fontWeight: 500 }}
+                                        labelStyle={{ color: '#71717a', marginBottom: '8px', fontSize: '12px' }}
+                                        formatter={(value: any) => {
+                                            if (typeof value === 'number') return value.toLocaleString();
+                                            return value;
+                                        }}
+                                    />
+                                    <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                                    <Bar yAxisId="right" dataKey="posts" name="포스트 건수" fill="#eab308" barSize={16} radius={[4, 4, 0, 0]} />
+                                    <Line yAxisId="left" type="monotone" dataKey="followers" name="팔로워 수" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                                    <Line yAxisId="left" type="monotone" dataKey="views" name="조회수" stroke="#f43f5e" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                                </ComposedChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800 transition-all flex flex-col">
+                <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800 transition-all flex flex-col flex-1 min-h-[280px]">
                     <div className="flex items-center gap-3 mb-2">
                         <div className="p-2.5 bg-violet-100 dark:bg-violet-500/10 rounded-xl text-violet-600 dark:text-violet-400">
                             <PieChartIcon size={20} />
@@ -194,8 +196,8 @@ export default function InstagramSection({ refreshTrigger, startDate, endDate }:
                                     <PieChart>
                                         <Pie
                                             data={donutData}
-                                            innerRadius={60}
-                                            outerRadius={80}
+                                            innerRadius={65}
+                                            outerRadius={90}
                                             paddingAngle={5}
                                             dataKey="value"
                                             stroke="none"
@@ -213,7 +215,7 @@ export default function InstagramSection({ refreshTrigger, startDate, endDate }:
                                 </ResponsiveContainer>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mb-8">
                                     <span className="text-xs text-zinc-500 dark:text-zinc-400">총 조회수</span>
-                                    <span className="text-xl font-bold text-zinc-900 dark:text-zinc-100">{totalViews.toLocaleString()}</span>
+                                    <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{totalViews.toLocaleString()}</span>
                                 </div>
                             </>
                         ) : (
