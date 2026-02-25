@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Instagram, CheckCircle2, Circle, X } from 'lucide-react';
+import { Instagram, CheckCircle2, Circle, X, Loader2 } from 'lucide-react';
+import { supabase } from '@/utils/supabaseClient';
 
 export type InstagramData = {
     month: string; // Format: YYYY-MM
@@ -43,6 +44,7 @@ export default function InstagramModal({ isOpen, onClose }: InstagramModalProps)
     const [data, setData] = useState<InstagramData[]>([]);
     const monthList = generateMonthList();
     const [selectedMonth, setSelectedMonth] = useState<string>('2026-01');
+    const [isLoading, setIsLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         followers: '',
@@ -54,10 +56,31 @@ export default function InstagramModal({ isOpen, onClose }: InstagramModalProps)
 
     useEffect(() => {
         if (isOpen) {
-            const saved = localStorage.getItem('instagramData');
-            if (saved) {
-                setData(JSON.parse(saved));
-            }
+            const fetchSupabaseData = async () => {
+                const { data: metrics, error } = await supabase
+                    .from('instagram_metrics')
+                    .select('*')
+                    .order('year_month', { ascending: true });
+
+                if (error) {
+                    console.error('Error fetching from Supabase:', error);
+                    return;
+                }
+
+                if (metrics) {
+                    const mappedData: InstagramData[] = metrics.map((m: any) => ({
+                        month: m.year_month,
+                        followers: Number(m.followers) || 0,
+                        views: Number(m.total_views) || 0,
+                        posts: Number(m.total_posts) || 0,
+                        followerViewRate: Number(m.follower_view_rate) || 0,
+                        nonFollowerViewRate: Number(m.non_follower_view_rate) || 0,
+                    }));
+                    setData(mappedData);
+                }
+            };
+
+            fetchSupabaseData();
             setSelectedMonth('2026-01'); // 항상 2026년 1월이 기본 선택되도록
         }
     }, [isOpen]);
@@ -84,31 +107,54 @@ export default function InstagramModal({ isOpen, onClose }: InstagramModalProps)
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedMonth) return alert('월을 선택해주세요.');
 
-        const newItem: InstagramData = {
-            month: selectedMonth,
+        setIsLoading(true);
+
+        const newItem = {
+            year_month: selectedMonth,
             followers: Number(formData.followers) || 0,
-            views: Number(formData.views) || 0,
-            posts: Number(formData.posts) || 0,
-            followerViewRate: Number(formData.followerViewRate) || 0,
-            nonFollowerViewRate: Number(formData.nonFollowerViewRate) || 0,
+            total_views: Number(formData.views) || 0,
+            total_posts: Number(formData.posts) || 0,
+            follower_view_rate: Number(formData.followerViewRate) || 0,
+            non_follower_view_rate: Number(formData.nonFollowerViewRate) || 0,
         };
 
-        const existingIndex = data.findIndex(d => d.month === newItem.month);
+        const { error } = await supabase
+            .from('instagram_metrics')
+            .upsert(newItem, { onConflict: 'year_month' });
+
+        setIsLoading(false);
+
+        if (error) {
+            console.error('Supabase Upsert Error:', error);
+            alert('데이터 저장 중 오류가 발생했습니다.');
+            return;
+        }
+
+        // Update local state to reflect UI changes immediately
+        const mappedItem: InstagramData = {
+            month: newItem.year_month,
+            followers: newItem.followers,
+            views: newItem.total_views,
+            posts: newItem.total_posts,
+            followerViewRate: newItem.follower_view_rate,
+            nonFollowerViewRate: newItem.non_follower_view_rate,
+        };
+
+        const existingIndex = data.findIndex(d => d.month === mappedItem.month);
         let newData;
         if (existingIndex >= 0) {
             newData = [...data];
-            newData[existingIndex] = newItem;
+            newData[existingIndex] = mappedItem;
         } else {
-            newData = [...data, newItem];
+            newData = [...data, mappedItem];
         }
 
         setData(newData);
-        localStorage.setItem('instagramData', JSON.stringify(newData));
-        alert(`${formatMonthDisplay(selectedMonth)} 데이터가 저장되었습니다.`);
+        alert(`${formatMonthDisplay(selectedMonth)} 데이터가 안전하게 저장되었습니다.`);
 
         // Close modal and signal that a save occurred to refresh charts
         onClose(true);
@@ -213,14 +259,14 @@ export default function InstagramModal({ isOpen, onClose }: InstagramModalProps)
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-zinc-700 dark:text-zinc-400">팔로워 조회 %</label>
                                         <input
-                                            type="number" name="followerViewRate" value={formData.followerViewRate} onChange={handleChange}
+                                            type="number" name="followerViewRate" value={formData.followerViewRate} onChange={handleChange} step="0.1"
                                             className="w-full px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-zinc-900 dark:text-zinc-100 transition-colors"
                                         />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-zinc-700 dark:text-zinc-400">비팔로워 조회 %</label>
                                         <input
-                                            type="number" name="nonFollowerViewRate" value={formData.nonFollowerViewRate} onChange={handleChange}
+                                            type="number" name="nonFollowerViewRate" value={formData.nonFollowerViewRate} onChange={handleChange} step="0.1"
                                             className="w-full px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-zinc-900 dark:text-zinc-100 transition-colors"
                                         />
                                     </div>
@@ -237,8 +283,10 @@ export default function InstagramModal({ isOpen, onClose }: InstagramModalProps)
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all shadow-sm shadow-blue-600/20 active:scale-[0.98]"
+                                    disabled={isLoading}
+                                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all shadow-sm shadow-blue-600/20 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
                                 >
+                                    {isLoading && <Loader2 size={16} className="animate-spin" />}
                                     {data.some(d => d.month === selectedMonth) ? '수정 및 저장' : '새 데이터 저장'}
                                 </button>
                             </div>

@@ -43,14 +43,37 @@ const formatMonthDisplay = (yyyyMM: string) => {
     return `${year}년 ${parseInt(month, 10)}월`;
 };
 
+import { supabase } from '@/utils/supabaseClient';
+
 export default function InstagramSection({ refreshTrigger }: { refreshTrigger?: number }) {
     const [data, setData] = useState<InstagramData[]>([]);
 
     useEffect(() => {
-        const saved = localStorage.getItem('instagramData');
-        if (saved) {
-            setData(JSON.parse(saved));
-        }
+        const fetchSupabaseData = async () => {
+            const { data: metrics, error } = await supabase
+                .from('instagram_metrics')
+                .select('*')
+                .order('year_month', { ascending: true });
+
+            if (error) {
+                console.error('Error fetching from Supabase:', error);
+                return;
+            }
+
+            if (metrics) {
+                const mappedData: InstagramData[] = metrics.map((m: any) => ({
+                    month: m.year_month,
+                    followers: Number(m.followers) || 0,
+                    views: Number(m.total_views) || 0,
+                    posts: Number(m.total_posts) || 0,
+                    followerViewRate: Number(m.follower_view_rate) || 0,
+                    nonFollowerViewRate: Number(m.non_follower_view_rate) || 0,
+                }));
+                setData(mappedData);
+            }
+        };
+
+        fetchSupabaseData();
     }, [refreshTrigger]);
 
     // 2025년 8월부터 2026년 1월까지 6개월 범위 (항상 순서대로 노출)

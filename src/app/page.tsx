@@ -8,6 +8,7 @@ import InsightModal from '@/components/InsightModal';
 import VisitorTrendWidget from '@/components/VisitorTrendWidget';
 import { Clock, MousePointerClick, ArrowRight, Edit2, Calendar } from 'lucide-react';
 import { TimeRange, getAggregatedMetrics, formatDuration, getAutoDateRange, detectViewMode, processChartData } from '@/utils/metricsDataUtils';
+import { supabase } from '@/utils/supabaseClient';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,22 +59,26 @@ export default function Home() {
 
   useEffect(() => {
     // 1. Instagram Logic (Trend)
-    const saved = localStorage.getItem('instagramData');
-    if (saved) {
-      const parsedData = JSON.parse(saved);
-      if (parsedData.length >= 2) {
+    const fetchInstagramTrend = async () => {
+      const { data: parsedData, error } = await supabase
+        .from('instagram_metrics')
+        .select('*')
+        .order('year_month', { ascending: true });
+
+      if (!error && parsedData && parsedData.length >= 2) {
         // Compare last two months for a simple mock insight
         const last = parsedData[parsedData.length - 1];
         const prev = parsedData[parsedData.length - 2];
-        const rate = prev.views > 0 ? Math.round(((last.views - prev.views) / prev.views) * 100) : 15;
+        const rate = prev.total_views > 0 ? Math.round(((last.total_views - prev.total_views) / prev.total_views) * 100) : 15;
         // Mock recommended day based on highest views correlation
         setInstagramInsight({
           increaseRate: rate > 0 ? rate : 15, // Fallback positive for demo
-          recommendedDay: last.posts > 5 ? '목요일' : '수요일',
+          recommendedDay: last.total_posts > 5 ? '목요일' : '수요일',
           contentType: 'IT 행사 요약'
         });
       }
-    }
+    };
+    fetchInstagramTrend();
 
     // 2. Visitor Logic (Peak time)
     const cData = processChartData(metricsObj.paddedRecords, viewMode);
