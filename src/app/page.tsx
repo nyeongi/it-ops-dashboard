@@ -264,7 +264,7 @@ export default function Home() {
                   >
                     <div className="flex flex-col">
                       <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">/결제진행 (결제수단 선택)</span>
-                      <span className="text-xs text-rose-500 dark:text-rose-400 font-medium mt-0.5">45% 이탈률</span>
+                      <span className="text-xs text-zinc-400 font-medium mt-0.5">No data</span>
                     </div>
                     <ArrowRight size={16} className="text-zinc-300 group-hover:text-zinc-500 transition-colors" />
                   </li>
@@ -274,7 +274,7 @@ export default function Home() {
                   >
                     <div className="flex flex-col">
                       <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">/상품상세/베스트셀러-A</span>
-                      <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-0.5">32% 이탈률</span>
+                      <span className="text-xs text-zinc-400 font-medium mt-0.5">No data</span>
                     </div>
                     <ArrowRight size={16} className="text-zinc-300 group-hover:text-zinc-500 transition-colors" />
                   </li>
@@ -284,7 +284,7 @@ export default function Home() {
                   >
                     <div className="flex flex-col">
                       <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">/이벤트가입안내</span>
-                      <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-0.5">18% 이탈률</span>
+                      <span className="text-xs text-zinc-400 font-medium mt-0.5">No data</span>
                     </div>
                     <ArrowRight size={16} className="text-zinc-300 group-hover:text-zinc-500 transition-colors" />
                   </li>
