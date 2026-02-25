@@ -77,33 +77,20 @@ export default function InstagramSection({ refreshTrigger, startDate, endDate }:
     }, [refreshTrigger]);
 
     const getTargetMonthsRange = () => {
-        if (!startDate || !endDate) {
-            const range = [];
-            let date = new Date(2025, 7, 1); // 2025-08
-            const end = new Date(2026, 0, 1); // 2026-01
-            while (date <= end) {
-                const y = date.getFullYear();
-                const m = String(date.getMonth() + 1).padStart(2, '0');
-                range.push(`${y}-${m}`);
-                date = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-            }
-            return range;
+        const range = [];
+        // 기본값: 현재 날짜 기준
+        let endObj = new Date();
+        if (endDate) {
+            endObj = new Date(endDate);
         }
 
-        const range = [];
-        let startObj = new Date(startDate);
-        startObj = new Date(startObj.getFullYear(), startObj.getMonth(), 1);
-        const endObj = new Date(endDate);
+        // 끝나는 달 설정
         const endMonth = new Date(endObj.getFullYear(), endObj.getMonth(), 1);
 
-        const diffMonths = (endMonth.getFullYear() - startObj.getFullYear()) * 12 + (endMonth.getMonth() - startObj.getMonth());
+        // 시작 달은 끝나는 달로부터 5개월 전 (총 6개월)
+        const startMonth = new Date(endMonth.getFullYear(), endMonth.getMonth() - 5, 1);
 
-        // Ensure at least 3 months to show a trend line
-        if (diffMonths < 2) {
-            startObj = new Date(endMonth.getFullYear(), endMonth.getMonth() - 2, 1);
-        }
-
-        let current = startObj;
+        let current = startMonth;
         while (current <= endMonth) {
             const y = current.getFullYear();
             const m = String(current.getMonth() + 1).padStart(2, '0');
