@@ -45,7 +45,7 @@ const formatMonthDisplay = (yyyyMM: string) => {
 
 import { supabase } from '@/utils/supabaseClient';
 
-export default function InstagramSection({ refreshTrigger }: { refreshTrigger?: number }) {
+export default function InstagramSection({ refreshTrigger, startDate, endDate }: { refreshTrigger?: number, startDate?: string, endDate?: string }) {
     const [data, setData] = useState<InstagramData[]>([]);
 
     useEffect(() => {
@@ -76,21 +76,44 @@ export default function InstagramSection({ refreshTrigger }: { refreshTrigger?: 
         fetchSupabaseData();
     }, [refreshTrigger]);
 
-    // 2025년 8월부터 2026년 1월까지 6개월 범위 (항상 순서대로 노출)
-    const getSixMonthsRange = () => {
+    const getTargetMonthsRange = () => {
+        if (!startDate || !endDate) {
+            const range = [];
+            let date = new Date(2025, 7, 1); // 2025-08
+            const end = new Date(2026, 0, 1); // 2026-01
+            while (date <= end) {
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                range.push(`${y}-${m}`);
+                date = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+            }
+            return range;
+        }
+
         const range = [];
-        let date = new Date(2025, 7, 1); // 2025-08
-        const end = new Date(2026, 0, 1); // 2026-01
-        while (date <= end) {
-            const y = date.getFullYear();
-            const m = String(date.getMonth() + 1).padStart(2, '0');
+        let startObj = new Date(startDate);
+        startObj = new Date(startObj.getFullYear(), startObj.getMonth(), 1);
+        const endObj = new Date(endDate);
+        const endMonth = new Date(endObj.getFullYear(), endObj.getMonth(), 1);
+
+        const diffMonths = (endMonth.getFullYear() - startObj.getFullYear()) * 12 + (endMonth.getMonth() - startObj.getMonth());
+
+        // Ensure at least 3 months to show a trend line
+        if (diffMonths < 2) {
+            startObj = new Date(endMonth.getFullYear(), endMonth.getMonth() - 2, 1);
+        }
+
+        let current = startObj;
+        while (current <= endMonth) {
+            const y = current.getFullYear();
+            const m = String(current.getMonth() + 1).padStart(2, '0');
             range.push(`${y}-${m}`);
-            date = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+            current = new Date(current.getFullYear(), current.getMonth() + 1, 1);
         }
         return range;
     };
 
-    const targetMonths = getSixMonthsRange();
+    const targetMonths = getTargetMonthsRange();
 
     const chartData = targetMonths.map(monthStr => {
         const found = data.find(d => d.month === monthStr);

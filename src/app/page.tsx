@@ -143,126 +143,130 @@ export default function Home() {
           </div>
         </header>
 
-        <section className="col-span-1 lg:col-span-4 flex flex-col gap-6">
-          {/* Website Metrics (Left Section) */}
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800 transition-all">
-            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-6">
-              <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 select-none">웹사이트 주요 지표</h2>
-              <div className="flex flex-col sm:flex-row items-center gap-3">
-                <div className="flex items-center gap-2 bg-zinc-50 dark:bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 shadow-sm">
-                  <Calendar size={14} className="text-zinc-400 ml-1" />
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => handleDateChange('start', e.target.value)}
-                    className="bg-transparent text-xs font-medium text-zinc-700 dark:text-zinc-300 outline-none cursor-pointer"
-                  />
-                  <span className="text-zinc-400 text-xs">~</span>
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => handleDateChange('end', e.target.value)}
-                    className="bg-transparent text-xs font-medium text-zinc-700 dark:text-zinc-300 outline-none cursor-pointer"
-                  />
-                </div>
-                <div className="flex bg-white dark:bg-zinc-900 rounded-lg p-1 border border-zinc-200 dark:border-zinc-700 shadow-sm shrink-0">
-                  <button
-                    onClick={() => handleViewModeChange('daily')}
-                    className={`text-xs px-3 py-1.5 rounded-md transition-colors ${viewMode === 'daily' ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 font-medium'}`}
-                  >
-                    일별
-                  </button>
-                  <button
-                    onClick={() => handleViewModeChange('weekly')}
-                    className={`text-xs px-3 py-1.5 rounded-md transition-colors ${viewMode === 'weekly' ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 font-medium'}`}
-                  >
-                    주별
-                  </button>
-                  <button
-                    onClick={() => handleViewModeChange('monthly')}
-                    className={`text-xs px-3 py-1.5 rounded-md transition-colors ${viewMode === 'monthly' ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 font-medium'}`}
-                  >
-                    월별
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4 mb-8">
-              {/* Metric Widgets */}
-              <VisitorTrendWidget
-                viewMode={viewMode}
-                records={metricsObj.paddedRecords}
-                totalVisitors={metricsObj.totalVisitors}
-              />
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-800/30 flex items-center justify-between">
-                  <div className="flex flex-col justify-center h-full">
-                    <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">평균 체류 시간</p>
-                    <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{formatDuration(metricsObj.avgDurationSec)}</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 relative items-stretch">
+          <section className="flex flex-col h-full">
+            {/* Website Metrics (Left Section) */}
+            <div className="flex flex-col h-full bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800 transition-all">
+              <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-6">
+                <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 select-none">웹사이트 주요 지표</h2>
+                <div className="flex flex-col sm:flex-row items-center gap-3">
+                  <div className="flex items-center gap-2 bg-zinc-50 dark:bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 shadow-sm">
+                    <Calendar size={14} className="text-zinc-400 ml-1" />
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => handleDateChange('start', e.target.value)}
+                      className="bg-transparent text-xs font-medium text-zinc-700 dark:text-zinc-300 outline-none cursor-pointer"
+                    />
+                    <span className="text-zinc-400 text-xs">~</span>
+                    <input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => handleDateChange('end', e.target.value)}
+                      className="bg-transparent text-xs font-medium text-zinc-700 dark:text-zinc-300 outline-none cursor-pointer"
+                    />
                   </div>
-                  <div className="h-10 w-10 shrink-0 rounded-full bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
-                    <Clock size={20} />
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-800/30 flex items-center justify-between">
-                  <div className="flex flex-col justify-center h-full">
-                    <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">행사 클릭률</p>
-                    <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{metricsObj.ctr}</p>
-                  </div>
-                  <div className="h-10 w-10 shrink-0 rounded-full bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
-                    <MousePointerClick size={20} />
+                  <div className="flex bg-white dark:bg-zinc-900 rounded-lg p-1 border border-zinc-200 dark:border-zinc-700 shadow-sm shrink-0">
+                    <button
+                      onClick={() => handleViewModeChange('daily')}
+                      className={`text-xs px-3 py-1.5 rounded-md transition-colors ${viewMode === 'daily' ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 font-medium'}`}
+                    >
+                      일별
+                    </button>
+                    <button
+                      onClick={() => handleViewModeChange('weekly')}
+                      className={`text-xs px-3 py-1.5 rounded-md transition-colors ${viewMode === 'weekly' ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 font-medium'}`}
+                    >
+                      주별
+                    </button>
+                    <button
+                      onClick={() => handleViewModeChange('monthly')}
+                      className={`text-xs px-3 py-1.5 rounded-md transition-colors ${viewMode === 'monthly' ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 font-medium'}`}
+                    >
+                      월별
+                    </button>
                   </div>
                 </div>
               </div>
+
+              <div className="space-y-4 mb-8">
+                {/* Metric Widgets */}
+                <VisitorTrendWidget
+                  viewMode={viewMode}
+                  records={metricsObj.paddedRecords}
+                  totalVisitors={metricsObj.totalVisitors}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 rounded-xl border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-800/30 flex items-center justify-between">
+                    <div className="flex flex-col justify-center h-full">
+                      <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">평균 체류 시간</p>
+                      <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{formatDuration(metricsObj.avgDurationSec)}</p>
+                    </div>
+                    <div className="h-10 w-10 shrink-0 rounded-full bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                      <Clock size={20} />
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-800/30 flex items-center justify-between">
+                    <div className="flex flex-col justify-center h-full">
+                      <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">행사 클릭률</p>
+                      <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{metricsObj.ctr}</p>
+                    </div>
+                    <div className="h-10 w-10 shrink-0 rounded-full bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                      <MousePointerClick size={20} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Exit Pages List */}
+              <div>
+                <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4 px-1">이탈 지점 분석 (TOP 3)</h3>
+                <ul className="space-y-2 mt-4">
+                  <li
+                    onClick={() => handleExitClick('/결제진행 (결제수단 선택)')}
+                    className="flex items-center justify-between px-4 py-3 bg-zinc-50 dark:bg-zinc-800/30 rounded-xl border border-zinc-100 dark:border-zinc-800/80 cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-600 transition-all hover:shadow-sm"
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">/결제진행 (결제수단 선택)</span>
+                      <span className="text-xs text-rose-500 dark:text-rose-400 font-medium mt-0.5">45% 이탈률</span>
+                    </div>
+                    <ArrowRight size={16} className="text-zinc-300 group-hover:text-zinc-500 transition-colors" />
+                  </li>
+                  <li
+                    onClick={() => handleExitClick('/상품상세/베스트셀러-A')}
+                    className="flex items-center justify-between px-4 py-3 bg-zinc-50 dark:bg-zinc-800/30 rounded-xl border border-zinc-100 dark:border-zinc-800/80 cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-600 transition-all hover:shadow-sm"
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">/상품상세/베스트셀러-A</span>
+                      <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-0.5">32% 이탈률</span>
+                    </div>
+                    <ArrowRight size={16} className="text-zinc-300 group-hover:text-zinc-500 transition-colors" />
+                  </li>
+                  <li
+                    onClick={() => handleExitClick('/이벤트가입안내')}
+                    className="flex items-center justify-between px-4 py-3 bg-zinc-50 dark:bg-zinc-800/30 rounded-xl border border-zinc-100 dark:border-zinc-800/80 cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-600 transition-all hover:shadow-sm"
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">/이벤트가입안내</span>
+                      <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-0.5">18% 이탈률</span>
+                    </div>
+                    <ArrowRight size={16} className="text-zinc-300 group-hover:text-zinc-500 transition-colors" />
+                  </li>
+                </ul>
+              </div>
             </div>
+          </section>
 
-            {/* Exit Pages List */}
-            <div>
-              <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4 px-1">이탈 지점 분석 (TOP 3)</h3>
-              <ul className="space-y-2 mt-4">
-                <li
-                  onClick={() => handleExitClick('/결제진행 (결제수단 선택)')}
-                  className="flex items-center justify-between px-4 py-3 bg-zinc-50 dark:bg-zinc-800/30 rounded-xl border border-zinc-100 dark:border-zinc-800/80 cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-600 transition-all hover:shadow-sm"
-                >
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">/결제진행 (결제수단 선택)</span>
-                    <span className="text-xs text-rose-500 dark:text-rose-400 font-medium mt-0.5">45% 이탈률</span>
-                  </div>
-                  <ArrowRight size={16} className="text-zinc-300 group-hover:text-zinc-500 transition-colors" />
-                </li>
-                <li
-                  onClick={() => handleExitClick('/상품상세/베스트셀러-A')}
-                  className="flex items-center justify-between px-4 py-3 bg-zinc-50 dark:bg-zinc-800/30 rounded-xl border border-zinc-100 dark:border-zinc-800/80 cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-600 transition-all hover:shadow-sm"
-                >
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">/상품상세/베스트셀러-A</span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-0.5">32% 이탈률</span>
-                  </div>
-                  <ArrowRight size={16} className="text-zinc-300 group-hover:text-zinc-500 transition-colors" />
-                </li>
-                <li
-                  onClick={() => handleExitClick('/이벤트가입안내')}
-                  className="flex items-center justify-between px-4 py-3 bg-zinc-50 dark:bg-zinc-800/30 rounded-xl border border-zinc-100 dark:border-zinc-800/80 cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-600 transition-all hover:shadow-sm"
-                >
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">/이벤트가입안내</span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-0.5">18% 이탈률</span>
-                  </div>
-                  <ArrowRight size={16} className="text-zinc-300 group-hover:text-zinc-500 transition-colors" />
-                </li>
-              </ul>
-            </div>
-          </div>
-        </section>
+          {/* Visual Divider Between Sections (Hidden on Mobile) */}
+          <div className="hidden lg:block absolute left-1/2 top-4 bottom-4 w-px bg-zinc-200/50 dark:bg-zinc-800/50 -translate-x-1/2"></div>
 
-        <section className="col-span-1 lg:col-span-8 flex flex-col gap-6">
-          {/* Instagram Charts Section shrinks to lg:col-span-8 */}
-          <InstagramSection refreshTrigger={lastUpdated} />
-
-        </section>
+          <section className="flex flex-col h-full">
+            {/* Instagram Charts Section */}
+            <InstagramSection refreshTrigger={lastUpdated} startDate={startDate} endDate={endDate} />
+          </section>
+        </div>
         <section className="col-span-1 lg:col-span-12 mt-4">
           <AIStrategyCards
             instagramInsight={instagramInsight}
