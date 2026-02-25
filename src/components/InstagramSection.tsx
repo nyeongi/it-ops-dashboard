@@ -116,9 +116,12 @@ export default function InstagramSection({ refreshTrigger, startDate, endDate }:
         };
     });
 
-    const latestData = chartData.length > 0 ? chartData[chartData.length - 1] : { followerViewRate: 0, nonFollowerViewRate: 0, displayMonth: '-', views: 0 };
+    // Find the latest month that actually has data
+    const validDataPoints = chartData.filter(d => d.views > 0);
+    const latestData = validDataPoints.length > 0
+        ? validDataPoints[validDataPoints.length - 1]
+        : { followerViewRate: 0, nonFollowerViewRate: 0, displayMonth: '-', views: 0 };
     const totalViews = latestData.views;
-
     const donutData = [
         { name: '팔로워', value: latestData.followerViewRate },
         { name: '비팔로워', value: latestData.nonFollowerViewRate },
