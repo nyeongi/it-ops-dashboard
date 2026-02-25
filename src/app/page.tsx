@@ -38,9 +38,43 @@ export default function Home() {
     }
   };
 
-  const metricsObj = useMemo(() => getAggregatedMetrics(startDate, endDate), [startDate, endDate]);
+  const [metricsObj, setMetricsObj] = useState<{ paddedRecords: any[], totalVisitors: number, avgDurationSec: number, ctr: string }>({
+    paddedRecords: [],
+    totalVisitors: 0,
+    avgDurationSec: 0,
+    ctr: '0%',
+  });
+  const [isMetricsLoading, setIsMetricsLoading] = useState(false);
 
-  // We need to pass a refresh trigger to InstagramSection when modal closes after save
+  useEffect(() => {
+    const fetchWebsiteMetrics = async () => {
+      if (!startDate || !endDate) return;
+      setIsMetricsLoading(true);
+      try {
+        const res = await fetch('/api/ga', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ startDate, endDate }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setMetricsObj({
+            paddedRecords: data.records || [],
+            totalVisitors: data.totalVisitors || 0,
+            avgDurationSec: data.avgDurationSec || 0,
+            ctr: data.ctr || '0%',
+          });
+        } else {
+          console.error('GA4 fetch error:', data.error);
+        }
+      } catch (error) {
+        console.error('Failed to fetch from /api/ga', error);
+      } finally {
+        setIsMetricsLoading(false);
+      }
+    };
+    fetchWebsiteMetrics();
+  }, [startDate, endDate]);  // We need to pass a refresh trigger to InstagramSection when modal closes after save
   const [lastUpdated, setLastUpdated] = useState<number>(Date.now());
 
   const handleModalClose = (wasSaved: boolean) => {
