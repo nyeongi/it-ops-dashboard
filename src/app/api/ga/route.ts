@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 
+// Cache responses for 1 hour (Vercel Serverless Function optimization)
+export const revalidate = 3600;
+
 const propertyId = process.env.GA_PROPERTY_ID;
 
 // Parse the private key correctly, replacing escaped newlines with actual newlines
