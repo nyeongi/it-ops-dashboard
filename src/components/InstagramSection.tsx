@@ -137,7 +137,6 @@ export default function InstagramSection({ refreshTrigger, startDate, endDate }:
                         </div>
                         <div>
                             <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">성과 트렌드</h2>
-                            <p className="text-sm text-zinc-500 dark:text-zinc-400">명확해진 시각적 너비로 확인하는 전체 지표 요약</p>
                         </div>
                     </div>
                     <div className="flex-grow w-full relative min-h-[220px]">
