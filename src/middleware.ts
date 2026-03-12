@@ -9,17 +9,25 @@ export function middleware(req: NextRequest) {
     if (!url.pathname.startsWith('/_next') && !url.pathname.startsWith('/favicon.ico')) {
         if (basicAuth) {
             const authValue = basicAuth.split(' ')[1];
-            const [user, pwd] = atob(authValue).split(':');
+            const decoded = atob(authValue);
+            const [user, pwd] = decoded.split(':');
 
-            const expectedUser = process.env.AUTH_USER;
-            const expectedPwd = process.env.AUTH_PASS;
+            // Strip potential quotes from env vars
+            const expectedUser = (process.env.AUTH_USER || '').replace(/['"]/g, '');
+            const expectedPwd = (process.env.AUTH_PASS || '').replace(/['"]/g, '');
 
-            if (expectedUser && expectedPwd && user === expectedUser && pwd === expectedPwd) {
+            console.log('Auth attempt:', { 
+                user, 
+                expectedUser, 
+                userMatches: user === expectedUser,
+                pwdMatches: pwd === expectedPwd
+            });
+
+            if (user === expectedUser && pwd === expectedPwd) {
                 return NextResponse.next();
             }
         }
 
-        url.pathname = '/api/auth';
         return new NextResponse('Auth Required', {
             status: 401,
             headers: {

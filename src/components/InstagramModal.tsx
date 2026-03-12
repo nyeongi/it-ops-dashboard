@@ -13,11 +13,13 @@ export type InstagramData = {
     nonFollowerViewRate: number;
 };
 
-// 2025년 6월부터 2026년 1월까지의 리스트 생성
+// 2025년 6월부터 지난달까지의 리스트 생성
 const generateMonthList = () => {
     const list = [];
     const startDate = new Date(2025, 5, 1); // 2025-06
-    const endDate = new Date(2026, 0, 1); // 2026-01
+    const curDate = new Date();
+    // 지난달 (오늘이 3월 12일이면 2월 1일)
+    const endDate = new Date(curDate.getFullYear(), curDate.getMonth() - 1, 1);
 
     let current = startDate;
     while (current <= endDate) {
@@ -43,7 +45,7 @@ interface InstagramModalProps {
 export default function InstagramModal({ isOpen, onClose }: InstagramModalProps) {
     const [data, setData] = useState<InstagramData[]>([]);
     const monthList = generateMonthList();
-    const [selectedMonth, setSelectedMonth] = useState<string>('2026-01');
+    const [selectedMonth, setSelectedMonth] = useState<string>(monthList[0] || '');
     const [isLoading, setIsLoading] = useState(false);
 
     const [formData, setFormData] = useState({
@@ -81,7 +83,7 @@ export default function InstagramModal({ isOpen, onClose }: InstagramModalProps)
             };
 
             fetchSupabaseData();
-            setSelectedMonth('2026-01'); // 항상 2026년 1월이 기본 선택되도록
+            setSelectedMonth(monthList[0] || ''); // 가장 최신 달이 기본 선택되도록
         }
     }, [isOpen]);
 
